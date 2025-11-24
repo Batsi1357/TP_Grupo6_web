@@ -6,6 +6,6 @@ public class RespuestaDto
 {
     private int idRespuesta;
     private String Texto;
-    private String PRespuesta;
+    private String Respuesta;
     private Integer PreguntaId;
 }

@@ -22,7 +22,6 @@ public class Rol
     private String TipoRol;
     @JsonIgnore
     @ToString.Exclude
-    @OneToMany(mappedBy = "rol", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "roles")
     private List<Usuario> usuarios;
-
 }

@@ -7,13 +7,15 @@ import java.util.List;
 
 public interface EvaluacionService
 {
-    void update(Evaluacion evaluacion);
+    void update(Evaluacion e);
     List<Evaluacion> list();
-    void insert(Evaluacion evaluacion);
+    Evaluacion insert(Evaluacion evaluacion);
     List<Evaluacion> buscarPorTitulo(String Titulo);
     Evaluacion listId(int id);
     void delete(int id);
-    List<Evaluacion> listarPorFechaInicio(LocalDate FechaInicio);
-    List<Evaluacion> listarPorDuracionMaxima(float maxDuracion);
-    List<Evaluacion> listarPorDuracionMinima(float minDuracion);
+    // Querys
+    List<Evaluacion> findByDuracionMaxima(int duracionMax);
+    List<Evaluacion> findByFechaInicioMayor(LocalDate fecha);
+    List<Evaluacion> findByTituloContieneSQL(String titulo);
+    List<Evaluacion> findEntreFechas(LocalDate inicio, LocalDate fin);
 }

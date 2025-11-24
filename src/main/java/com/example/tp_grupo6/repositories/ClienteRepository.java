@@ -10,8 +10,23 @@ import java.util.Optional;
 
 public interface ClienteRepository extends JpaRepository<Cliente,Integer>
 {
-    @Query("select u from Cliente u where lower(u.Nombre) like lower(concat('%', :nombre, '%'))")
-    List<Cliente> buscarService(@Param("Nombre") String Nombre);
-    Optional<Cliente> findByEmail(String email);
-    List<Cliente> findAllByEdad(Integer edad);
+    // QUERY METHOD: por email exacto ✅
+    List<Cliente> findByEmail(String email);
+
+    // SQL NATIVO: por dominio de email ✅
+    @Query(
+            value = "SELECT * FROM clientes c WHERE c.email LIKE %:dominio",
+            nativeQuery = true
+    )
+    List<Cliente> buscarPorDominioEmailSQL(@Param("dominio") String dominio);
+
+    // JPQL: edad mínima ✅
+    @Query("SELECT c FROM Cliente c WHERE c.edad >= :edadMin")
+    List<Cliente> buscarPorEdadJPQL(@Param("edadMin") int edadMin);
+
+    // JPQL: nombre o apellido contiene texto ✅
+    @Query("SELECT c FROM Cliente c " +
+            "WHERE LOWER(c.Nombre) LIKE LOWER(CONCAT('%', :texto, '%')) " +
+            "   OR LOWER(c.Apellido) LIKE LOWER(CONCAT('%', :texto, '%'))")
+    List<Cliente> buscarPorNombreOApellidoJPQL(@Param("texto") String texto);
 }

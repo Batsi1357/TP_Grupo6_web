@@ -19,19 +19,21 @@ public class Unidad
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idUnidad;
-    private String Titulo;
-    private String Descripcion;
-    private int Nivel;
-    private String Categoria;
-    private int Duracion;
-
+    private String titulo;
+    private String descripcion;
+    private int nivel;
+    private String categoria;
+    private int duracion;
     @JsonIgnore
-    @OneToMany(mappedBy = "unidad_clase", fetch = FetchType.EAGER )
     @ToString.Exclude
-    private List<Clase> clases;
+    @OneToMany(mappedBy = "unidad", fetch = FetchType.EAGER )
+    private List<Clase> clasesid;
     @JsonIgnore
-    @OneToMany(mappedBy = "unidad_apunte", fetch = FetchType.EAGER )
     @ToString.Exclude
-    private List<Apunte> apuntes;
-
+    @OneToMany(mappedBy = "unidad_evaluacion", fetch = FetchType.EAGER )
+    private List<Evaluacion> evaluaciones;
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "cliente_id")
+    private Cliente cliente_unidad;
 }

@@ -18,11 +18,9 @@ public class SubscripcionServiceImpl implements SubscripcionService
         return subscripcionRepository.findAll();
     }
     @Override
-    public void insert(Subscripcion suscripcion)
-    {
-        subscripcionRepository.save(suscripcion);
-    }
-    @Override
+    public Subscripcion insert(Subscripcion s) {
+        return subscripcionRepository.save(s);
+    }    @Override
     public Subscripcion buscar(int id)
     {
         return subscripcionRepository.findById(id).orElse(null);
@@ -36,11 +34,5 @@ public class SubscripcionServiceImpl implements SubscripcionService
     public void update(Subscripcion suscripcion)
     {
         subscripcionRepository.save(suscripcion);
-    }
-    @Override
-    public List<String[]> quantitytypebySuscripciones()
-    {
-
-        return List.of();
     }
 }

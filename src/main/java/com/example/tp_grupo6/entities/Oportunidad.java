@@ -24,6 +24,6 @@ public class Oportunidad
     @ToString.Exclude
     @ManyToOne
     @JoinColumn(name="evaluacion_id")
-    private Evaluacion evaluacion_oportunidades;
+    private Evaluacion evaluacion_oportunidadesid;
 
 }

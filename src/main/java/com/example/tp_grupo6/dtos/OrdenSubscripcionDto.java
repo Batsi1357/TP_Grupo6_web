@@ -7,9 +7,9 @@ import lombok.Data;
 public class OrdenSubscripcionDto
 {
     private int idOrdenSubscripcion;
-    private String Estado;
-    private LocalDate FechaInicio;
-    private LocalDate FechaFin;
-    private Integer ClienteId;
+    private String estado;
+    private LocalDate fechaInicio;
+    private LocalDate fechaFin;
+    private Integer clienteId;
     private Integer SubscripcionId;
 }

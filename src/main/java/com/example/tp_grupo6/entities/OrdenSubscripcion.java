@@ -23,14 +23,14 @@ public class OrdenSubscripcion
     private LocalDate FechaFin;
     @JsonIgnore
     @ToString.Exclude
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "cliente", unique = true, nullable = false)
-    private Cliente cliente_ordenSubscripcion;
+    private Cliente cliente_ordenSubscripcionid;
 
     @JsonIgnore
     @ToString.Exclude
     @ManyToOne
     @JoinColumn(name="subscripcion_id")
-    private Subscripcion subscripcion;
+    private Subscripcion subscripcionid;
     
 }

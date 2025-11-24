@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.List;
+
 @Entity
 @Table(name="usuarios")
 @Data
@@ -21,15 +23,18 @@ public class Usuario
     private String Username;
     private String Password;
     private String activo;
-
     @JsonIgnore
     @ToString.Exclude
-    @ManyToOne
-    @JoinColumn(name="rol_id")
-    private Rol rol;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "usuarios_roles",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "rol_id")
+    )
+    private List<Rol> roles;
 
     @JsonIgnore
     @ToString.Exclude
     @OneToOne(mappedBy = "usuario", fetch = FetchType.LAZY)
-    private Cliente cliente_usuario;
+    private Cliente cliente_usuarioid;
 }

@@ -25,10 +25,14 @@ public class Subscripcion
     @ToString.Exclude
     @JsonIgnore
     @OneToMany(
-            mappedBy = "subscripcion",
+            mappedBy = "subscripcionid",
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.LAZY
     )
     private List<OrdenSubscripcion> ordenSubscripciones;
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "subscripcion_claseid")
+    private Clase clase;
 }

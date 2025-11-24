@@ -20,16 +20,20 @@ public class Evaluacion
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idEvaluacion;
-    private String Titulo;
-    private String Descripcion;
-    private LocalDate FechaInicio;
-    private int Duracion;
+    private String titulo;
+    private String descripcion;
+    private LocalDate fechaInicio;
+    private int duracion;
     @JsonIgnore
     @ToString.Exclude
-    @OneToMany(mappedBy = "evaluacion_preguntas", fetch = FetchType.EAGER )
+    @OneToMany(mappedBy = "evaluacion_preguntasid", fetch = FetchType.EAGER )
     private List<Pregunta> preguntas;
     @JsonIgnore
     @ToString.Exclude
-    @OneToMany(mappedBy = "evaluacion_oportunidades", fetch = FetchType.EAGER )
+    @OneToMany(mappedBy = "evaluacion_oportunidadesid", fetch = FetchType.EAGER )
     private List<Oportunidad> oportunidades;
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "unidad_id")
+    private Unidad unidad_evaluacion;
 }

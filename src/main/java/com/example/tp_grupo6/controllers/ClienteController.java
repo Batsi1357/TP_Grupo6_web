@@ -73,4 +73,29 @@ public class ClienteController {
         clienteService.delete(id);
         return ResponseEntity.noContent().build();
     }
+    // ---------- Endpoints de las 4 querys ----------
+
+    // QM #4: por apellido exacto
+    @GetMapping("/buscar-email")
+    public List<Cliente> buscarporEmail(@RequestParam String email) {
+        return clienteService.findByEmail(email);
+    }
+
+    // SQL nativo #4: dominio de email (ej: "@gmail.com")
+    @GetMapping("/buscar-dominio")
+    public List<Cliente> buscarPorDominio(@RequestParam String dominio) {
+        return clienteService.findByDominioEmailSQL(dominio);
+    }
+
+    // JPQL #3: edad >= edadMin
+    @GetMapping("/buscar-edad")
+    public List<Cliente> buscarPorEdadMinima(@RequestParam int edadMin) {
+        return clienteService.findByEdadMinimaJPQL(edadMin);
+    }
+
+    // JPQL #4: nombre o apellido contiene texto
+    @GetMapping("/buscar-nombre-apellido")
+    public List<Cliente> buscarPorNombreOApellido(@RequestParam String texto) {
+        return clienteService.findByNombreOApellidoContiene(texto);
+    }
 }

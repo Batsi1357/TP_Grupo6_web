@@ -20,10 +20,9 @@ public class EvaluacionServiceImpl implements EvaluacionService
     @Override
     public void update(Evaluacion evaluacion) {evaluacionRepository.save(evaluacion);}
     @Override
-    public void insert(Evaluacion evaluacion) {
-        evaluacionRepository.save(evaluacion);
+    public Evaluacion insert(Evaluacion e) {
+        return evaluacionRepository.save(e);
     }
-
     @Override
     public List<Evaluacion> buscarPorTitulo(String Titulo) {
         return List.of();
@@ -40,17 +39,21 @@ public class EvaluacionServiceImpl implements EvaluacionService
     }
 
     @Override
-    public List<Evaluacion> listarPorFechaInicio(LocalDate FechaInicio) {
-        return List.of();
+    public List<Evaluacion> findByDuracionMaxima(int duracionMax) {
+        return evaluacionRepository.findByDuracionLessThanEqual(duracionMax);
     }
 
     @Override
-    public List<Evaluacion> listarPorDuracionMaxima(float maxDuracion) {
-        return List.of();
+    public List<Evaluacion> findByFechaInicioMayor(LocalDate fecha) {
+        return evaluacionRepository.buscarPorFechaInicioSQL(fecha);
     }
 
     @Override
-    public List<Evaluacion> listarPorDuracionMinima(float minDuracion) {
-        return List.of();
+    public List<Evaluacion> findByTituloContieneSQL(String titulo) {
+        return evaluacionRepository.buscarPorTituloSQL(titulo);
     }
-}
+
+    @Override
+    public List<Evaluacion> findEntreFechas(LocalDate inicio, LocalDate fin) {
+        return evaluacionRepository.buscarEntreFechasJPQL(inicio, fin);
+    }}

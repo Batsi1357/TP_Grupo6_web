@@ -18,10 +18,7 @@ public class ClaseServiceImpl implements ClaseService
     }
 
     @Override
-    public void insert(Clase clase) {
-        claseRepository.save(clase);
-    }
-
+    public Clase insert(Clase clase) { return claseRepository.save(clase);}
     @Override
     public Clase listId(int id) {
         return claseRepository.findById(id).orElse(null);

@@ -29,16 +29,16 @@ public class Cliente
     @JsonIgnore
     @ToString.Exclude
     @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "cliente_usuario", unique = true, nullable = false)
+    @JoinColumn(name = "cliente_usuarioid", unique = true, nullable = false)
     private Usuario usuario;
     @JsonIgnore
     @ToString.Exclude
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "cliente_ordenSubscripcion", unique = true, nullable = false)
-    private OrdenSubscripcion ordenSubscripcion;
+    @OneToMany(mappedBy = "cliente_ordenSubscripcionid", fetch = FetchType.LAZY)
+    private List<OrdenSubscripcion> ordenSubscripcion;
     @JsonIgnore
     @ToString.Exclude
-    @OneToMany(mappedBy = "cliente_apunte", fetch = FetchType.EAGER )
-    private List<Apunte> apuntes;
+    @OneToMany(mappedBy = "cliente_unidad", fetch = FetchType.LAZY)
+    private List<Unidad> unidades;
+
 }
  

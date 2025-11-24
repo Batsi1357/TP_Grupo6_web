@@ -1,7 +1,9 @@
 package com.example.tp_grupo6.controllers;
 
 import com.example.tp_grupo6.dtos.SubscripcionDto;
+import com.example.tp_grupo6.entities.Clase;
 import com.example.tp_grupo6.entities.Subscripcion;
+import com.example.tp_grupo6.services.ClaseService;
 import com.example.tp_grupo6.services.SubscripcionService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,53 +21,124 @@ public class SubscripcionController {
     @Autowired
     private SubscripcionService subscripcionService;
 
+    @Autowired
+    private ClaseService claseService;
+
     // ----------- READ: LISTAR TODAS -----------
     @GetMapping
     public List<SubscripcionDto> listar() {
-        return subscripcionService.list().stream().map(sub -> {
-            ModelMapper m = new ModelMapper();
-            return m.map(sub, SubscripcionDto.class);
-        }).collect(Collectors.toList());
+        return subscripcionService.list()
+                .stream()
+                .map(sub -> {
+                    SubscripcionDto dto = new SubscripcionDto();
+                    dto.setIdSubscripcion(sub.getIdSubscripcion());
+                    dto.setNombre(sub.getNombre());
+                    dto.setDescripcion(sub.getDescripcion());
+                    dto.setPrecio(sub.getPrecio());
+                    // aquí llenas el id de la clase
+                    if (sub.getClase() != null) {
+                        dto.setClaseid(sub.getClase().getIdClase());
+                    }
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
-
     // ----------- CREATE -----------
     @PostMapping("/insert")
-    public ResponseEntity<Subscripcion> add(@RequestBody Subscripcion subscripcion) {
-        if (subscripcion == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_ACCEPTABLE);
+    public ResponseEntity<SubscripcionDto> add(@RequestBody SubscripcionDto dto) {
+
+        // 1) Buscar la clase por id que viene en el DTO
+        Clase clase = claseService.listId(dto.getClaseid());
+        if (clase == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        subscripcionService.insert(subscripcion);
-        return new ResponseEntity<>(subscripcion, HttpStatus.CREATED);
+
+        // 2) Armar la entidad
+        Subscripcion sub = new Subscripcion();
+        sub.setNombre(dto.getNombre());
+        sub.setDescripcion(dto.getDescripcion());
+        sub.setPrecio(dto.getPrecio());
+        sub.setClase(clase);
+
+        // 3) Guardar
+        Subscripcion guardada = subscripcionService.insert(sub);
+
+        // 4) Armar DTO de respuesta (igual estilo que arriba)
+        SubscripcionDto respuesta = new SubscripcionDto();
+        respuesta.setIdSubscripcion(guardada.getIdSubscripcion());
+        respuesta.setNombre(guardada.getNombre());
+        respuesta.setDescripcion(guardada.getDescripcion());
+        respuesta.setPrecio(guardada.getPrecio());
+        if (guardada.getClase() != null) {
+            respuesta.setClaseid(guardada.getClase().getIdClase());
+        }
+
+        return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
     }
+
 
     // ----------- READ: BUSCAR POR ID -----------
     @GetMapping("/{id}")
     public ResponseEntity<?> listarPorId(@PathVariable("id") Integer id) {
-        Subscripcion subscripcion = subscripcionService.buscar(id);
-        if (subscripcion == null) {
+        Subscripcion sub = subscripcionService.buscar(id);
+        if (sub == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("No existe una suscripción con ID: " + id);
         }
-        return ResponseEntity.ok(subscripcion);
+
+        SubscripcionDto dto = new SubscripcionDto();
+        dto.setIdSubscripcion(sub.getIdSubscripcion());
+        dto.setNombre(sub.getNombre());
+        dto.setDescripcion(sub.getDescripcion());
+        dto.setPrecio(sub.getPrecio());
+        if (sub.getClase() != null) {
+            dto.setClaseid(sub.getClase().getIdClase());
+        }
+
+        return ResponseEntity.ok(dto);
     }
 
     // ----------- UPDATE -----------
     @PutMapping("/update")
-    public ResponseEntity<?> update(@RequestBody Subscripcion request) {
-        Subscripcion existente = subscripcionService.buscar(request.getIdSubscripcion());
+    public ResponseEntity<?> update(@RequestBody SubscripcionDto dto) {
+        Subscripcion existente = subscripcionService.buscar(dto.getIdSubscripcion());
         if (existente == null) {
-            return new ResponseEntity<>("No existe una suscripción con ID: " + request.getIdSubscripcion(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("No existe una suscripción con ID: " + dto.getIdSubscripcion(),
+                    HttpStatus.NOT_FOUND);
         }
 
-        subscripcionService.update(request);
-        return new ResponseEntity<>(request, HttpStatus.OK);
+        existente.setNombre(dto.getNombre());
+        existente.setDescripcion(dto.getDescripcion());
+        existente.setPrecio(dto.getPrecio());
+
+        if (dto.getClaseid() != null) {
+            Clase clase = claseService.listId(dto.getClaseid());
+            if (clase == null) {
+                return new ResponseEntity<>("No existe una clase con ID: " + dto.getClaseid(),
+                        HttpStatus.NOT_FOUND);
+            }
+            existente.setClase(clase);
+        }
+
+        subscripcionService.update(existente);
+
+        SubscripcionDto respuesta = new SubscripcionDto();
+        respuesta.setIdSubscripcion(existente.getIdSubscripcion());
+        respuesta.setNombre(existente.getNombre());
+        respuesta.setDescripcion(existente.getDescripcion());
+        respuesta.setPrecio(existente.getPrecio());
+        if (existente.getClase() != null) {
+            respuesta.setClaseid(existente.getClase().getIdClase());
+        }
+
+        return new ResponseEntity<>(respuesta, HttpStatus.OK);
     }
 
     // ----------- DELETE -----------
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<?> eliminar(@PathVariable("id") Integer id) {
-        Subscripcion subscripcion = subscripcionService.buscar(id);
-        if (subscripcion == null) {
+        Subscripcion sub = subscripcionService.buscar(id);
+        if (sub == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("No existe una suscripción con ID: " + id);
         }

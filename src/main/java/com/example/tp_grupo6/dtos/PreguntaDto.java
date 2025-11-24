@@ -5,9 +5,8 @@ import lombok.Data;
 public class PreguntaDto
 {
     private int idPregunta;
-    private String Enunciado;
-    private String Tipo;
-    private Float Puntaje;
-    private Integer RespuestaId;
-    private Integer EvaluacionId;
+    private String enunciado;
+    private String tipo;
+    private Float puntaje;
+    private Integer evaluacionId;
 }

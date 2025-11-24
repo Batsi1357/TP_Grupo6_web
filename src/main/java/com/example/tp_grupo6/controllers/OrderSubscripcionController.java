@@ -31,12 +31,24 @@ public class OrderSubscripcionController
 
     // ----------- CREATE -----------
     @PostMapping("/insert")
-    public ResponseEntity<OrdenSubscripcion> add(@RequestBody OrdenSubscripcion ordenSubscripcion) {
-        if (ordenSubscripcion == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_ACCEPTABLE);
-        }
-        ordenSubscripcionService.insert(ordenSubscripcion);
-        return new ResponseEntity<>(ordenSubscripcion, HttpStatus.CREATED);
+    public ResponseEntity<OrdenSubscripcionDto> add(@RequestBody OrdenSubscripcionDto dto) {
+
+        ModelMapper m = new ModelMapper();
+        OrdenSubscripcion entidad = m.map(dto, OrdenSubscripcion.class);
+
+        // aquí mapeas clienteId y SubscripcionId a las relaciones reales:
+        // Cliente cliente = new Cliente();
+        // cliente.setIdCliente(dto.getClienteId());
+        // entidad.setCliente(cliente);
+        //
+        // Subscripcion subscripcion = new Subscripcion();
+        // subscripcion.setIdSubscripcion(dto.getSubscripcionId());
+        // entidad.setSubscripcion(subscripcion);
+
+        ordenSubscripcionService.insert(entidad);
+
+        OrdenSubscripcionDto respuesta = m.map(entidad, OrdenSubscripcionDto.class);
+        return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
     }
 
     // ----------- READ: BUSCAR POR ID -----------

@@ -7,7 +7,7 @@ import lombok.Data;
 public class OportunidadDto
 {
     private int idOportunidad;
-    private int Intento;
-    private LocalDate FechaInicio;
-    private Integer EvaluacionId;
+    private int intento;
+    private LocalDate fechaInicio;
+    private Integer evaluacionId;
 }

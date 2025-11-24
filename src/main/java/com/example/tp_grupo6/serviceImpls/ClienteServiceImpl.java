@@ -15,11 +15,6 @@ public class ClienteServiceImpl implements ClienteService
     private ClienteRepository clienteRepository;
 
     @Override
-    public Optional<Cliente> findByEmail(String Email) {
-        return clienteRepository.findByEmail(Email);
-    }
-
-    @Override
     public List<Cliente> list() {
         return clienteRepository.findAll();
     }
@@ -43,10 +38,24 @@ public class ClienteServiceImpl implements ClienteService
     public void update(Cliente cliente) {
         clienteRepository.save(cliente);
     }
+    @Override
+    public List<Cliente> findByEmail(String email) {
+        return clienteRepository.findByEmail(email);
+    }
 
     @Override
-    public List<Cliente> findAllByEdad(int Edad) {
-        return clienteRepository.findAllByEdad(Edad);
+    public List<Cliente> findByDominioEmailSQL(String dominio) {
+        return clienteRepository.buscarPorDominioEmailSQL(dominio);
+    }
+
+    @Override
+    public List<Cliente> findByEdadMinimaJPQL(int edadMin) {
+        return clienteRepository.buscarPorEdadJPQL(edadMin);
+    }
+
+    @Override
+    public List<Cliente> findByNombreOApellidoContiene(String texto) {
+        return clienteRepository.buscarPorNombreOApellidoJPQL(texto);
     }
 
 }

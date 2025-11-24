@@ -1,6 +1,7 @@
 package com.example.tp_grupo6.controllers;
 
 import com.example.tp_grupo6.dtos.PreguntaDto;
+import com.example.tp_grupo6.entities.Evaluacion;
 import com.example.tp_grupo6.entities.Pregunta;
 import com.example.tp_grupo6.services.PreguntaService;
 import org.modelmapper.ModelMapper;
@@ -31,14 +32,21 @@ public class PreguntaController
 
     // ----------- CREATE -----------
     @PostMapping("/insert")
-    public ResponseEntity<Pregunta> add(@RequestBody Pregunta pregunta) {
-        if (pregunta == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_ACCEPTABLE);
-        }
-        preguntaService.insert(pregunta);
-        return new ResponseEntity<>(pregunta, HttpStatus.CREATED);
-    }
+    public ResponseEntity<PreguntaDto> add(@RequestBody PreguntaDto dto) {
 
+        ModelMapper m = new ModelMapper();
+        Pregunta pregunta = m.map(dto, Pregunta.class);
+
+        // aquí conectas el EvaluacionId con la entidad Evaluacion
+        Evaluacion eval = new Evaluacion();
+        eval.setIdEvaluacion(dto.getEvaluacionId());
+        pregunta.setEvaluacion_preguntasid(eval);
+
+        preguntaService.insert(pregunta);
+
+        PreguntaDto respuesta = m.map(pregunta, PreguntaDto.class);
+        return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
+    }
     // ----------- READ: BUSCAR POR ID -----------
     @GetMapping("/{id}")
     public ResponseEntity<?> listarPorId(@PathVariable("id") Integer id) {
@@ -52,14 +60,21 @@ public class PreguntaController
 
     // ----------- UPDATE -----------
     @PutMapping("/update")
-    public ResponseEntity<?> update(@RequestBody Pregunta request) {
-        Pregunta existente = preguntaService.listId(request.getIdPregunta());
+    public ResponseEntity<?> update(@RequestBody PreguntaDto dto) {
+        Pregunta existente = preguntaService.listId(dto.getIdPregunta());
         if (existente == null) {
-            return new ResponseEntity<>("No existe una pregunta con ID: " + request.getIdPregunta(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("No existe una pregunta con ID: " + dto.getIdPregunta(), HttpStatus.NOT_FOUND);
         }
 
-        preguntaService.update(request);
-        return new ResponseEntity<>(request, HttpStatus.OK);
+        ModelMapper m = new ModelMapper();
+        Pregunta pregunta = m.map(dto, Pregunta.class);
+
+        Evaluacion eval = new Evaluacion();
+        eval.setIdEvaluacion(dto.getEvaluacionId());
+        pregunta.setEvaluacion_preguntasid(eval);
+
+        preguntaService.update(pregunta);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
     // ----------- DELETE -----------

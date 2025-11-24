@@ -13,5 +13,4 @@ public interface OportunidadService
     List<Oportunidad> buscarPorOportunidad(String Intento);
     Oportunidad listId(int id);
     void delete(int id);
-    List<Oportunidad> listarPorFechaInicio(LocalDate FechaIntento);
 }

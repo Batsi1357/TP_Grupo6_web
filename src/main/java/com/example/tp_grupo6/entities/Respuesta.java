@@ -18,10 +18,11 @@ public class Respuesta
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idRespuesta;
     private String Texto;
-    private String PRespuesta;
+    private String Respuesta;
+
     @JsonIgnore
     @ToString.Exclude
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "respuesta", unique = true, nullable = false)
-    private Pregunta pregunta;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "respuestaid", unique = true, nullable = false)
+    private Pregunta preguntaid;
 }

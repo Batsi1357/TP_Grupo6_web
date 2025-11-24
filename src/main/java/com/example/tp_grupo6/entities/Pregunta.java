@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.List;
+
 @Entity
 @Table(name="preguntas")
 @Data
@@ -23,11 +25,11 @@ public class Pregunta
     @JsonIgnore
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "evaluacion")
-    private Evaluacion evaluacion_preguntas;
+    @JoinColumn(name = "evaluacion_id")
+    private Evaluacion evaluacion_preguntasid;
     @JsonIgnore
     @ToString.Exclude
-    @OneToOne(mappedBy = "pregunta", fetch = FetchType.LAZY)
-    private Respuesta respuesta;
+    @OneToMany(mappedBy = "preguntaid", fetch = FetchType.LAZY)
+    private List<Respuesta> respuestaid;
 
 }

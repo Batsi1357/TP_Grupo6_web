@@ -73,4 +73,28 @@ public class UnidadController
         unidadService.delete(id);
         return ResponseEntity.noContent().build();
     }
+    // QM #1: por categoría exacta
+    @GetMapping("/buscar-categoria")
+    public List<Unidad> buscarPorCategoria(@RequestParam String categoria) {
+        return unidadService.findByCategoria(categoria);
+    }
+
+    // QM #2: por nivel >=
+    @GetMapping("/buscar-nivel")
+    public List<Unidad> buscarPorNivelMayorIgual(@RequestParam int nivel) {
+        return unidadService.findByNivelMayorIgual(nivel);
+    }
+
+    // SQL nativo #1: duración mínima
+    @GetMapping("/buscar-duracion")
+    public List<Unidad> buscarPorDuracionMinima(@RequestParam int minDuracion) {
+        return unidadService.findByDuracionMinima(minDuracion);
+    }
+
+    // JPQL #1: título contiene texto
+    @GetMapping("/buscar-titulo")
+    public List<Unidad> buscarPorTitulo(@RequestParam String texto) {
+        return unidadService.findByTituloContiene(texto);
+    }
+
 }

@@ -7,9 +7,9 @@ import lombok.Data;
 public class EvaluacionDto
 {
     private int idEvaluacion;
-    private String Titulo;
-    private String Descripcion;
-    private LocalDate FechaInicio;
-    private int Duracion;
-
+    private String titulo;
+    private String descripcion;
+    private LocalDate fechaInicio;
+    private int duracion;
+    private Integer unidadid;
 }

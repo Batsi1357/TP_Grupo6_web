@@ -12,6 +12,8 @@ public interface ClienteService
     public Cliente listId(int id);
     public void delete(int id);
     public void update(Cliente cliente);
-    public List<Cliente> findAllByEdad(int Edad);
-    public Optional<Cliente> findByEmail(String email);
-}
+    // Querys
+    List<Cliente> findByEmail(String email);
+    List<Cliente> findByDominioEmailSQL(String dominio);
+    List<Cliente> findByEdadMinimaJPQL(int edadMin);
+    List<Cliente> findByNombreOApellidoContiene(String texto);}

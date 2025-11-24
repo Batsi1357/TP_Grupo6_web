@@ -38,8 +38,4 @@ public class RolServiceImpl implements RolService
         rolRepository.save(rol);
     }
 
-    @Override
-    public Optional<Rol> findByTipoRol(String TipoRol) {
-        return Optional.empty();
-    }
 }

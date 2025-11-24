@@ -8,4 +8,5 @@ public class SubscripcionDto
     private String Nombre;
     private String Descripcion;
     private Float Precio;
+    private Integer claseid;
 }

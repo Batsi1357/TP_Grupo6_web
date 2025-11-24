@@ -10,9 +10,11 @@ public interface UnidadService
     public List<Unidad> list();
     public void insert(Unidad unidad);
     public Unidad listId(int id);
-    Optional<Unidad> findById(Integer id);
-    List<Unidad> findByCategoria(String categoria);
-    List<Unidad> findByNivel(String nivel);
     public void update(Unidad unidad);
     public void delete(int id);
+    // Métodos para las querys del repository
+    List<Unidad> findByCategoria(String categoria);
+    List<Unidad> findByNivelMayorIgual(int nivel);
+    List<Unidad> findByDuracionMinima(int minDuracion);
+    List<Unidad> findByTituloContiene(String texto);
 }

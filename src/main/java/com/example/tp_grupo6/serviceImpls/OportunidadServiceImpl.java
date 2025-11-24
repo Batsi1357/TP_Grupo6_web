@@ -40,9 +40,4 @@ public class OportunidadServiceImpl implements OportunidadService
     public void delete(int id) {
         oportunidadRepository.deleteById(id);
     }
-
-    @Override
-    public List<Oportunidad> listarPorFechaInicio(LocalDate FechaIntento) {
-        return List.of();
-    }
 }
