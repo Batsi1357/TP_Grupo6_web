@@ -9,6 +9,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public class ClaseController {
     private UnidadService unidadService;
 
     // ----------- READ: LISTAR TODAS -----------
+    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
     @GetMapping
     public List<ClaseDto> listar() {
         return claseService.list().stream().map(clase -> {
@@ -34,6 +36,7 @@ public class ClaseController {
     }
 
     // ----------- CREATE -----------
+    @PreAuthorize("hasRole('Admin')")
     @PostMapping("/insert")
     public ResponseEntity<ClaseDto> add(@RequestBody ClaseDto dto) {
 
@@ -57,7 +60,7 @@ public class ClaseController {
 
         return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
     }
-
+    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
     @GetMapping("/{id}")
     public ResponseEntity<?> listarPorId(@PathVariable("id") Integer id) {
         Clase clase = claseService.listId(id);
@@ -67,7 +70,7 @@ public class ClaseController {
         }
         return ResponseEntity.ok(clase);
     }
-
+    @PreAuthorize("hasRole('Admin')")
     @PutMapping("/update")
     public ResponseEntity<?> update(@RequestBody Clase request) {
 
@@ -78,7 +81,7 @@ public class ClaseController {
         claseService.update(request);
         return new ResponseEntity<>(request, HttpStatus.OK);
     }
-
+    @PreAuthorize("hasRole('Admin')")
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<?> eliminar(@PathVariable("id") Integer id) {
         Clase clase = claseService.listId(id);

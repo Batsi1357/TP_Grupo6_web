@@ -8,6 +8,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class PreguntaController
     private PreguntaService preguntaService;
 
     // ----------- READ: LISTAR TODAS -----------
+    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
     @GetMapping
     public List<PreguntaDto> listar() {
         return preguntaService.list().stream().map(pregunta -> {
@@ -31,6 +33,7 @@ public class PreguntaController
     }
 
     // ----------- CREATE -----------
+    @PreAuthorize("hasRole('Admin')")
     @PostMapping("/insert")
     public ResponseEntity<PreguntaDto> add(@RequestBody PreguntaDto dto) {
 
@@ -48,6 +51,7 @@ public class PreguntaController
         return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
     }
     // ----------- READ: BUSCAR POR ID -----------
+    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
     @GetMapping("/{id}")
     public ResponseEntity<?> listarPorId(@PathVariable("id") Integer id) {
         Pregunta pregunta = preguntaService.listId(id);
@@ -59,7 +63,8 @@ public class PreguntaController
     }
 
     // ----------- UPDATE -----------
-    @PutMapping("/update")
+    @PreAuthorize("hasRole('Admin')")
+    @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@RequestBody PreguntaDto dto) {
         Pregunta existente = preguntaService.listId(dto.getIdPregunta());
         if (existente == null) {
@@ -78,6 +83,7 @@ public class PreguntaController
     }
 
     // ----------- DELETE -----------
+    @PreAuthorize("hasRole('Admin')")
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<?> eliminar(@PathVariable("id") Integer id) {
         Pregunta pregunta = preguntaService.listId(id);

@@ -11,5 +11,6 @@ public interface UsuarioService
     public Usuario listId(int id);
     public void delete(int id);
     public void update(Usuario usuario);
-
+    //Security
+    Usuario findByUsername(String username);
 }

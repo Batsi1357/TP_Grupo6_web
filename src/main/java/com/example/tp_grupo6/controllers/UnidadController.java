@@ -7,6 +7,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class UnidadController
     private UnidadService unidadService;
 
     // ----------- READ: LISTAR TODAS -----------
+    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
     @GetMapping
     public List<UnidadDto> listar() {
         return unidadService.list().stream().map(unidad -> {
@@ -30,6 +32,7 @@ public class UnidadController
     }
 
     // ----------- CREATE -----------
+    @PreAuthorize("hasRole('Admin')")
     @PostMapping("/insert")
     public ResponseEntity<Unidad> add(@RequestBody Unidad unidad) {
         if (unidad == null) {
@@ -40,6 +43,7 @@ public class UnidadController
     }
 
     // ----------- READ: BUSCAR POR ID -----------
+    @PreAuthorize("hasRole('Estudiante')")
     @GetMapping("/{id}")
     public ResponseEntity<?> listarPorId(@PathVariable("id") Integer id) {
         Unidad unidad = unidadService.listId(id);
@@ -51,7 +55,8 @@ public class UnidadController
     }
 
     // ----------- UPDATE -----------
-    @PutMapping("/update")
+    @PreAuthorize("hasRole('Admin')")
+    @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@RequestBody Unidad request) {
         Unidad existente = unidadService.listId(request.getIdUnidad());
         if (existente == null) {
@@ -63,6 +68,7 @@ public class UnidadController
     }
 
     // ----------- DELETE -----------
+    @PreAuthorize("hasRole('Admin')")
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<?> eliminar(@PathVariable("id") Integer id) {
         Unidad unidad = unidadService.listId(id);
@@ -73,25 +79,30 @@ public class UnidadController
         unidadService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
     // QM #1: por categoría exacta
+    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
     @GetMapping("/buscar-categoria")
     public List<Unidad> buscarPorCategoria(@RequestParam String categoria) {
         return unidadService.findByCategoria(categoria);
     }
 
     // QM #2: por nivel >=
+    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
     @GetMapping("/buscar-nivel")
     public List<Unidad> buscarPorNivelMayorIgual(@RequestParam int nivel) {
         return unidadService.findByNivelMayorIgual(nivel);
     }
 
     // SQL nativo #1: duración mínima
+    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
     @GetMapping("/buscar-duracion")
     public List<Unidad> buscarPorDuracionMinima(@RequestParam int minDuracion) {
         return unidadService.findByDuracionMinima(minDuracion);
     }
 
     // JPQL #1: título contiene texto
+    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
     @GetMapping("/buscar-titulo")
     public List<Unidad> buscarPorTitulo(@RequestParam String texto) {
         return unidadService.findByTituloContiene(texto);

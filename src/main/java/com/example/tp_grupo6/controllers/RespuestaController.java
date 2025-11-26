@@ -9,6 +9,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class RespuestaController {
     private PreguntaService preguntaService;
 
     // ----------- LISTAR TODOS -----------
+    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
     @GetMapping
     public List<RespuestaDto> listar() {
         return respuestaService.list().stream().map(respuesta -> {
@@ -39,6 +41,7 @@ public class RespuestaController {
     }
 
     // ----------- LISTAR POR ID -----------
+    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
     @GetMapping("/{id}")
     public ResponseEntity<?> listarPorId(@PathVariable("id") Integer id) {
         Respuesta respuesta = respuestaService.listId(id);
@@ -57,6 +60,7 @@ public class RespuestaController {
     }
 
     // ----------- INSERT -----------
+    @PreAuthorize("hasRole('Admin')")
     @PostMapping("/insert")
     public ResponseEntity<?> add(@RequestBody RespuestaDto request) {
 
@@ -92,6 +96,7 @@ public class RespuestaController {
     }
 
     // ----------- UPDATE -----------
+    @PreAuthorize("hasRole('Admin')")
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Integer id,
                                     @RequestBody RespuestaDto request) {
@@ -128,6 +133,7 @@ public class RespuestaController {
     }
 
     // ----------- DELETE -----------
+    @PreAuthorize("hasRole('Admin')")
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<?> eliminar(@PathVariable("id") Integer id) {
         Respuesta respuesta = respuestaService.listId(id);

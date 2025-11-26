@@ -11,5 +11,5 @@ public class ClienteDto
     private String Celular;
     private String email;
     private Integer edad;
-    private Integer UsuarioId;
+    private Integer usuarioId;
 }

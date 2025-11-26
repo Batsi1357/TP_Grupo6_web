@@ -7,6 +7,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class RolController {
     private RolService rolService;
 
     // ----------- READ: LISTAR TODOS -----------
+    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
     @GetMapping
     public List<RolDto> listar() {
         return rolService.list().stream().map(rol -> {
@@ -29,6 +31,7 @@ public class RolController {
     }
 
     // ----------- CREATE -----------
+    @PreAuthorize("hasRole('Admin')")
     @PostMapping("/insert")
     public ResponseEntity<Rol> add(@RequestBody Rol rol) {
         if (rol == null) {
@@ -37,8 +40,8 @@ public class RolController {
         rolService.insert(rol);
         return new ResponseEntity<>(rol, HttpStatus.CREATED);
     }
-
     // ----------- READ: BUSCAR POR ID -----------
+    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
     @GetMapping("/{id}")
     public ResponseEntity<?> listarPorId(@PathVariable("id") Integer id) {
         Rol rol = rolService.listId(id);
@@ -50,7 +53,8 @@ public class RolController {
     }
 
     // ----------- UPDATE -----------
-    @PutMapping("/update")
+    @PreAuthorize("hasRole('Admin')")
+    @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@RequestBody Rol request) {
         Rol existente = rolService.listId(request.getIdRol());
         if (existente == null) {
@@ -62,6 +66,7 @@ public class RolController {
     }
 
     // ----------- DELETE -----------
+    @PreAuthorize("hasRole('Admin')")
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<?> eliminar(@PathVariable("id") Integer id) {
         Rol rol = rolService.listId(id);

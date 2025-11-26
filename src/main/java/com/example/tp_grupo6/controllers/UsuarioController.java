@@ -8,6 +8,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class UsuarioController {
     @Autowired
     private RolService rolService;
     // ----------- READ: LISTAR TODOS -----------
+    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
     @GetMapping
     public List<UsuarioDto> listar() {
         return usuarioService.list().stream().map(usuario -> {
@@ -34,6 +36,7 @@ public class UsuarioController {
         }).collect(Collectors.toList());
     }
     // ----------- CREATE -----------
+    @PreAuthorize("hasRole('Admin')")
     @PostMapping("/insert")
     public ResponseEntity<?> add(@RequestBody UsuarioDto request) {
 
@@ -75,6 +78,7 @@ public class UsuarioController {
     }
 
     // ----------- READ: BUSCAR POR ID -----------
+    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
     @GetMapping("/{id}")
     public ResponseEntity<?> listarPorId(@PathVariable("id") Integer id) {
         Usuario usuario = usuarioService.listId(id);
@@ -92,59 +96,34 @@ public class UsuarioController {
 
         return ResponseEntity.ok(dto);
     }
+     // ----------- UPDATE -----------
+    @PreAuthorize("hasRole('Admin')")
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> update(@RequestBody Usuario request) {
 
-    // ----------- UPDATE -----------
-    @PutMapping("/update")
-    public ResponseEntity<?> update(@RequestBody UsuarioDto request) {
-
-        if (request == null) {
-            return new ResponseEntity<>("Body vacío", HttpStatus.BAD_REQUEST);
-        }
-
-        // 1) Buscar usuario existente
+        // Buscar usuario existente
         Usuario existente = usuarioService.listId(request.getIdUsuario());
         if (existente == null) {
-            return new ResponseEntity<>("No existe un usuario con ID: " + request.getIdUsuario(),
-                    HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(
+                    "No existe un usuario con ID: " + request.getIdUsuario(),
+                    HttpStatus.NOT_FOUND
+            );
         }
 
-        // 2) Buscar el rol (si vino rolId)
-        Rol rol = null;
-        if (request.getRolId() != null) {
-            rol = rolService.listId(request.getRolId());
-            if (rol == null) {
-                return new ResponseEntity<>("No existe un rol con ID: " + request.getRolId(),
-                        HttpStatus.BAD_REQUEST);
-            }
-        }
-
-        // 3) Actualizar campos
+        // Actualizar SOLO campos básicos (no tocamos los roles)
         existente.setUsername(request.getUsername());
         existente.setPassword(request.getPassword());
         existente.setActivo(request.getActivo());
 
-        // actualizar lista de roles
-        if (rol != null) {
-            existente.setRoles(List.of(rol));    // un solo rol
-        } else {
-            existente.setRoles(null);            // o Collections.emptyList()
-        }
-
-        // 4) Guardar
+        // Guardar cambios
         usuarioService.update(existente);
 
-        // 5) Armar DTO de respuesta
-        UsuarioDto response = new UsuarioDto();
-        response.setIdUsuario(existente.getIdUsuario());
-        response.setUsername(existente.getUsername());
-        response.setPassword(existente.getPassword());
-        response.setActivo(existente.getActivo());
-        response.setRolId(rol != null ? rol.getIdRol() : null);
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        // Puedes devolver el entity o si quieres un DTO sin rolId
+        return new ResponseEntity<>(existente, HttpStatus.OK);
     }
 
     // ----------- DELETE -----------
+    @PreAuthorize("hasRole('Admin')")
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<?> eliminar(@PathVariable("id") Integer id) {
         Usuario usuario = usuarioService.listId(id);

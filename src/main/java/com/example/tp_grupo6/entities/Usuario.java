@@ -20,8 +20,10 @@ public class Usuario
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idUsuario;
-    private String Username;
-    private String Password;
+    @Column(name = "username", nullable = false, unique = true)
+    private String username;
+    @Column(nullable = false)
+    private String password;
     private String activo;
     @JsonIgnore
     @ToString.Exclude
