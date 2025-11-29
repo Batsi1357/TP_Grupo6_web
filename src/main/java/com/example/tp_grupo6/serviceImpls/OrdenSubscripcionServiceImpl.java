@@ -17,8 +17,9 @@ public class OrdenSubscripcionServiceImpl implements OrdenSubscripcionService
 
     @Override
     public List<OrdenSubscripcion> list() {
-        return List.of();
+        return ordenSubscripcionRepository.findAll();
     }
+
 
     @Override
     public void insert(OrdenSubscripcion ordenSubscripcion) {

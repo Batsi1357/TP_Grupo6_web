@@ -1,8 +1,6 @@
 package com.example.tp_grupo6.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,13 +27,15 @@ public class JwtTokenUtil {
     @PostConstruct
     public void init() {
         byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
-        this.key = Keys.hmacShaKeyFor(keyBytes);   // devuelve SecretKey
+        this.key = Keys.hmacShaKeyFor(keyBytes);
+        System.out.println("🔑 JwtTokenUtil - Secret cargado: " + secret);
+        System.out.println("🔑 JwtTokenUtil - Key bytes length: " + keyBytes.length);
     }
 
-    // --------- generar token ---------
     public String generateToken(String username) {
         Date ahora = new Date();
         Date vencimiento = new Date(ahora.getTime() + expirationMs);
+        System.out.println("🔑 Generando token con secret: " + secret);
 
         return Jwts.builder()
                 .subject(username)
@@ -45,16 +45,38 @@ public class JwtTokenUtil {
                 .compact();
     }
 
-    // --------- validar token ---------
     public boolean validateToken(String token) {
         try {
-            // si parsea sin lanzar excepción, es válido
+            System.out.println("🔑 [VALIDATE] Validando token...");
+            System.out.println("🔑 [VALIDATE] Secret en uso: " + secret);
+            System.out.println("🔑 [VALIDATE] Token recibido: " + token.substring(0, 50) + "...");
+
             Jwts.parser()
-                    .verifyWith(key)            // ahora sí compila
+                    .verifyWith(key)
                     .build()
                     .parseSignedClaims(token);
+
+            System.out.println("✅ [VALIDATE] Token válido!");
             return true;
-        } catch (JwtException | IllegalArgumentException e) {
+        } catch (ExpiredJwtException e) {
+            System.out.println("❌ [VALIDATE] Token expirado: " + e.getMessage());
+            return false;
+        } catch (UnsupportedJwtException e) {
+            System.out.println("❌ [VALIDATE] JWT no soportado: " + e.getMessage());
+            return false;
+        } catch (MalformedJwtException e) {
+            System.out.println("❌ [VALIDATE] JWT malformado: " + e.getMessage());
+            return false;
+        } catch (SignatureException e) {
+            System.out.println("❌ [VALIDATE] Firma inválida: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        } catch (IllegalArgumentException e) {
+            System.out.println("❌ [VALIDATE] Argumento inválido: " + e.getMessage());
+            return false;
+        } catch (Exception e) {
+            System.out.println("❌ [VALIDATE] Error desconocido: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }

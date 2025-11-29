@@ -9,28 +9,31 @@ import lombok.ToString;
 
 import java.time.LocalDate;
 @Entity
-@Table(name="ordenSubscripciones")
+@Table(name = "orden_subscripciones")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrdenSubscripcion
-{
+public class OrdenSubscripcion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idOrdenSubscripcion;
-    private String Estado;
-    private LocalDate FechaInicio;
-    private LocalDate FechaFin;
+
+    @Column(name = "estado")
+    private String estado;
+
+    @Column(name = "fecha_inicio")
+    private LocalDate fechaInicio;
+
+    @Column(name = "fecha_fin")
+    private LocalDate fechaFin;
+
     @JsonIgnore
-    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "cliente", unique = true, nullable = false)
+    @JoinColumn(name = "cliente", nullable = false)
     private Cliente cliente_ordenSubscripcionid;
 
     @JsonIgnore
-    @ToString.Exclude
     @ManyToOne
-    @JoinColumn(name="subscripcion_id")
+    @JoinColumn(name = "subscripcion_id")
     private Subscripcion subscripcionid;
-    
 }

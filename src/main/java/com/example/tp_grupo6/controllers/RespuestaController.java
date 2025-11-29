@@ -27,7 +27,7 @@ public class RespuestaController {
     private PreguntaService preguntaService;
 
     // ----------- LISTAR TODOS -----------
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    //@PreAuthorize("hasAnyRole('Admin','Estudiante')")
     @GetMapping
     public List<RespuestaDto> listar() {
         return respuestaService.list().stream().map(respuesta -> {

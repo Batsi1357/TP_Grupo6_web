@@ -16,7 +16,8 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/Unidad")
 @CrossOrigin("*")
-public class UnidadController
+public class
+UnidadController
 {
     @Autowired
     private UnidadService unidadService;

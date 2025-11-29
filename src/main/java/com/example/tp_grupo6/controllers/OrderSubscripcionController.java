@@ -22,7 +22,6 @@ public class OrderSubscripcionController
     private OrdenSubscripcionService ordenSubscripcionService;
 
     // ----------- READ: LISTAR TODAS -----------
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
     @GetMapping
     public List<OrdenSubscripcionDto> listar() {
         return ordenSubscripcionService.list().stream().map(orden -> {

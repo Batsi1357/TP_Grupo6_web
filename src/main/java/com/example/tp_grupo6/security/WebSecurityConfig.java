@@ -14,6 +14,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -31,27 +33,25 @@ public class WebSecurityConfig
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .authorizeHttpRequests(auth -> auth
-                        // RUTAS PÚBLICAS (sin token)
-                        .requestMatchers(
-                                "/auth/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/v3/api-docs/**",
-                                "/v3/api-docs.yaml"
-                        ).permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        // TODO LO DEMÁS requiere estar autenticado
-                        .anyRequest().authenticated()
+                .authorizeHttpRequests(auth ->
+                        auth.requestMatchers(
+                                        "/auth/**",
+                                        "/swagger-ui/**",
+                                        "/swagger-ui.html",
+                                        "/v3/api-docs/**",
+                                        "/v3/api-docs.yaml"
+                                ).permitAll()
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex ->
-                        // AQUÍ VA EL ENTRY POINT, NO EL FILTER
                         ex.authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
                 .formLogin(form -> form.disable())
-                .httpBasic(basic -> basic.disable());
+                .httpBasic(basic -> basic.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()));  // Agregar soporte CORS aquí
 
-        // filtro JWT antes del filtro de username/password
+        // Agregar filtro JWT antes del filtro de username/password
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -65,5 +65,27 @@ public class WebSecurityConfig
     @Bean
     public AuthenticationManager authManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
+    }
+
+    // Configuración de CORS personalizada
+    @Bean
+    public UrlBasedCorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+
+        // Permitir todos los orígenes (puedes especificar uno específico como "http://localhost:4200" si es necesario)
+        config.addAllowedOrigin("http://localhost:4200");
+
+        // Permitir todos los métodos HTTP
+        config.addAllowedMethod("*");
+
+        // Permitir todos los encabezados
+        config.addAllowedHeader("*");
+
+        // Permitir credenciales (cookies, encabezados de autorización, etc.)
+        config.setAllowCredentials(true);
+
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 }

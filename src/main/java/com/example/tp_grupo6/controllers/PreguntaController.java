@@ -65,21 +65,30 @@ public class PreguntaController
     // ----------- UPDATE -----------
     @PreAuthorize("hasRole('Admin')")
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@RequestBody PreguntaDto dto) {
-        Pregunta existente = preguntaService.listId(dto.getIdPregunta());
+    public ResponseEntity<?> update(@PathVariable("id") Integer id,
+                                    @RequestBody PreguntaDto dto) {
+
+        Pregunta existente = preguntaService.listId(id);
         if (existente == null) {
-            return new ResponseEntity<>("No existe una pregunta con ID: " + dto.getIdPregunta(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("No existe una pregunta con ID: " + id, HttpStatus.NOT_FOUND);
         }
 
+        // Actualizar campos
+        existente.setEnunciado(dto.getEnunciado());
+
+        // actualizar Evaluacion si viene el id
+        if (dto.getEvaluacionId() != null) {
+            Evaluacion eval = new Evaluacion();
+            eval.setIdEvaluacion(dto.getEvaluacionId());
+            existente.setEvaluacion_preguntasid(eval);
+        }
+
+        preguntaService.update(existente);
+
         ModelMapper m = new ModelMapper();
-        Pregunta pregunta = m.map(dto, Pregunta.class);
+        PreguntaDto respuesta = m.map(existente, PreguntaDto.class);
 
-        Evaluacion eval = new Evaluacion();
-        eval.setIdEvaluacion(dto.getEvaluacionId());
-        pregunta.setEvaluacion_preguntasid(eval);
-
-        preguntaService.update(pregunta);
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+        return new ResponseEntity<>(respuesta, HttpStatus.OK);
     }
 
     // ----------- DELETE -----------

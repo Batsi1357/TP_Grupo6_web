@@ -14,7 +14,15 @@ public class RespuestaServiceImpl implements RespuestaService
     private RespuestaRepository respuestaRepository;
     @Override
     public List<Respuesta> list() {
-        return List.of();
+        System.out.println("🔍 [RESPUESTA-SERVICE] list() llamado");
+        List<Respuesta> items = respuestaRepository.findAll();
+        System.out.println("📊 [RESPUESTA-SERVICE] Respuestas encontradas: " + (items != null ? items.size() : 0));
+        if (items != null && !items.isEmpty()) {
+            items.forEach(r -> System.out.println("  - ID: " + r.getIdRespuesta() + ", Texto: " + r.getTexto()));
+        } else {
+            System.out.println("⚠️ [RESPUESTA-SERVICE] Lista vacía o null");
+        }
+        return items;
     }
 
     @Override

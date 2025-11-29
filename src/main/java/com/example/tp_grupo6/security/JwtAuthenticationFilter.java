@@ -31,37 +31,57 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        final String header = request.getHeader("Authorization");
+        try {
+            final String header = request.getHeader("Authorization");
+            System.out.println("🔓 [FILTER] URL: " + request.getRequestURI());
+            System.out.println("🔓 [FILTER] Header Authorization: " + header);
 
-        String username = null;
-        String token = null;
+            String username = null;
+            String token = null;
 
-        // Formato correcto: "Bearer xxxxx"
-        if (header != null && header.startsWith("Bearer ")) {
-            token = header.substring(7);
-            username = jwtTokenUtil.getUsernameFromToken(token);
-        }
+            if (header != null && header.startsWith("Bearer ")) {
+                token = header.substring(7);
+                System.out.println("🔓 [FILTER] Token extraído: " + token.substring(0, 50) + "...");
 
-        // Validación
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-            if (jwtTokenUtil.validateToken(token)) {
-
-                UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities()
-                        );
-
-                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                SecurityContextHolder.getContext().setAuthentication(auth);
+                try {
+                    username = jwtTokenUtil.getUsernameFromToken(token);
+                    System.out.println("🔓 [FILTER] Username extraído: " + username);
+                } catch (Exception e) {
+                    System.out.println("❌ [FILTER] Error extrayendo username: " + e.getMessage());
+                }
+            } else {
+                System.out.println("⚠️ [FILTER] No hay header Authorization o no empieza con 'Bearer '");
             }
-        }
 
-        filterChain.doFilter(request, response);
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                System.out.println("🔓 [FILTER] Validando token para usuario: " + username);
+
+                try {
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                    if (jwtTokenUtil.validateToken(token)) {
+                        System.out.println("✅ [FILTER] Token válido. Autenticando a " + username);
+
+                        UsernamePasswordAuthenticationToken auth =
+                                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                        auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(auth);
+                        System.out.println("✅ [FILTER] Autenticación establecida");
+                    } else {
+                        System.out.println("❌ [FILTER] Token inválido");
+                    }
+                } catch (Exception e) {
+                    System.out.println("❌ [FILTER] Error validando: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            } else {
+                System.out.println("⚠️ [FILTER] Username es null o ya hay autenticación");
+            }
+
+            filterChain.doFilter(request, response);
+        } catch (Exception e) {
+            System.out.println("❌ [FILTER] Error general: " + e.getMessage());
+            e.printStackTrace();
+            filterChain.doFilter(request, response);
+        }
     }
 }

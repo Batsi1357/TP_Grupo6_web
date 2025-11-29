@@ -5,8 +5,8 @@ import lombok.Data;
 public class UsuarioDto
 {
     private Integer idUsuario;
-    private String Username;
-    private String Password;
+    private String username;
+    private String password;
     private String activo;
     private Integer RolId;
 }
