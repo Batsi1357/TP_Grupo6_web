@@ -22,7 +22,7 @@ public class OportunidadController {
     private OportunidadService oportunidadService;
 
     // ----------- READ: LISTAR TODAS -----------
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping
     public List<OportunidadDto> listar() {
         return oportunidadService.list().stream().map(oportunidad -> {
@@ -32,7 +32,7 @@ public class OportunidadController {
     }
 
     // ----------- CREATE -----------
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/insert")
     public ResponseEntity<OportunidadDto> add(@RequestBody OportunidadDto dto) {
         ModelMapper m = new ModelMapper();
@@ -50,7 +50,7 @@ public class OportunidadController {
     }
 
     // ----------- READ: BUSCAR POR ID -----------
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping("/{id}")
     public ResponseEntity<?> listarPorId(@PathVariable("id") Integer id) {
         Oportunidad oportunidad = oportunidadService.listId(id);
@@ -62,7 +62,7 @@ public class OportunidadController {
         return ResponseEntity.ok(m.map(oportunidad, OportunidadDto.class));
     }
     // ----------- UPDATE -----------
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@RequestBody OportunidadDto dto) {
         Oportunidad existente = oportunidadService.listId(dto.getIdOportunidad());
@@ -83,7 +83,7 @@ public class OportunidadController {
     }
 
     // ----------- DELETE -----------
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<?> eliminar(@PathVariable("id") Integer id) {
         Oportunidad oportunidad = oportunidadService.listId(id);

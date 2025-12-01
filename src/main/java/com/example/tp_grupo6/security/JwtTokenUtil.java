@@ -1,88 +1,80 @@
 package com.example.tp_grupo6.security;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.List;
 
 @Component
 public class JwtTokenUtil {
 
-    // puedes mover esto a application.properties si quieres
-    // tp.jwt.secret=mi_clave_super_secreta_1234567890
     @Value("${tp.jwt.secret:mi_clave_super_secreta_1234567890}")
     private String secret;
 
-    // 1 hora
+    // 1 hora por defecto
     @Value("${tp.jwt.expiration-ms:3600000}")
     private long expirationMs;
 
-    private SecretKey key;             // <--- SecretKey, no java.security.Key
+    private SecretKey key;
 
     @PostConstruct
     public void init() {
         byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
         this.key = Keys.hmacShaKeyFor(keyBytes);
-        System.out.println("🔑 JwtTokenUtil - Secret cargado: " + secret);
-        System.out.println("🔑 JwtTokenUtil - Key bytes length: " + keyBytes.length);
     }
 
-    public String generateToken(String username) {
+    // --------- generar token con roles ---------
+    public String generateToken(UserDetails userDetails) {
         Date ahora = new Date();
         Date vencimiento = new Date(ahora.getTime() + expirationMs);
-        System.out.println("🔑 Generando token con secret: " + secret);
+
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority) // ROLE_ADMIN, ROLE_ESTUDIANTE, etc.
+                .toList();
 
         return Jwts.builder()
-                .subject(username)
+                .subject(userDetails.getUsername())
+                .claim("roles", roles)
                 .issuedAt(ahora)
                 .expiration(vencimiento)
                 .signWith(key)
                 .compact();
     }
 
+    // --------- validar token ---------
     public boolean validateToken(String token) {
         try {
-            System.out.println("🔑 [VALIDATE] Validando token...");
-            System.out.println("🔑 [VALIDATE] Secret en uso: " + secret);
-            System.out.println("🔑 [VALIDATE] Token recibido: " + token.substring(0, 50) + "...");
-
             Jwts.parser()
                     .verifyWith(key)
                     .build()
                     .parseSignedClaims(token);
-
-            System.out.println("✅ [VALIDATE] Token válido!");
             return true;
-        } catch (ExpiredJwtException e) {
-            System.out.println("❌ [VALIDATE] Token expirado: " + e.getMessage());
-            return false;
-        } catch (UnsupportedJwtException e) {
-            System.out.println("❌ [VALIDATE] JWT no soportado: " + e.getMessage());
-            return false;
-        } catch (MalformedJwtException e) {
-            System.out.println("❌ [VALIDATE] JWT malformado: " + e.getMessage());
-            return false;
-        } catch (SignatureException e) {
-            System.out.println("❌ [VALIDATE] Firma inválida: " + e.getMessage());
-            e.printStackTrace();
-            return false;
-        } catch (IllegalArgumentException e) {
-            System.out.println("❌ [VALIDATE] Argumento inválido: " + e.getMessage());
-            return false;
-        } catch (Exception e) {
-            System.out.println("❌ [VALIDATE] Error desconocido: " + e.getMessage());
-            e.printStackTrace();
+        } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
 
     public String getUsernameFromToken(String token) {
         return getClaims(token).getSubject();
+    }
+
+    public List<String> getRolesFromToken(String token) {
+        Claims claims = getClaims(token);
+        Object roles = claims.get("roles");
+        if (roles instanceof List<?>) {
+            return ((List<?>) roles).stream().map(String::valueOf).toList();
+        }
+        return List.of();
     }
 
     private Claims getClaims(String token) {

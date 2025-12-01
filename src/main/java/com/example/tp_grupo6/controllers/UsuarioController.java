@@ -23,7 +23,7 @@ public class UsuarioController {
     @Autowired
     private RolService rolService;
     // ----------- READ: LISTAR TODOS -----------
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping
     public List<UsuarioDto> listar() {
         return usuarioService.list().stream().map(usuario -> {
@@ -36,7 +36,7 @@ public class UsuarioController {
         }).collect(Collectors.toList());
     }
     // ----------- CREATE -----------
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/insert")
     public ResponseEntity<?> add(@RequestBody UsuarioDto request) {
 
@@ -78,7 +78,7 @@ public class UsuarioController {
     }
 
     // ----------- READ: BUSCAR POR ID -----------
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping("/{id}")
     public ResponseEntity<?> listarPorId(@PathVariable("id") Integer id) {
         Usuario usuario = usuarioService.listId(id);
@@ -96,8 +96,8 @@ public class UsuarioController {
 
         return ResponseEntity.ok(dto);
     }
-     // ----------- UPDATE -----------
-    @PreAuthorize("hasRole('Admin')")
+    // ----------- UPDATE -----------
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@RequestBody Usuario request) {
 
@@ -123,7 +123,7 @@ public class UsuarioController {
     }
 
     // ----------- DELETE -----------
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<?> eliminar(@PathVariable("id") Integer id) {
         Usuario usuario = usuarioService.listId(id);

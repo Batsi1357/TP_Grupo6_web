@@ -26,7 +26,7 @@ public class SubscripcionController {
     private ClaseService claseService;
 
     // ----------- READ: LISTAR TODAS -----------
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping
     public List<SubscripcionDto> listar() {
         return subscripcionService.list()
@@ -37,7 +37,6 @@ public class SubscripcionController {
                     dto.setNombre(sub.getNombre());
                     dto.setDescripcion(sub.getDescripcion());
                     dto.setPrecio(sub.getPrecio());
-                    // aquí llenas el id de la clase
                     if (sub.getClase() != null) {
                         dto.setClaseid(sub.getClase().getIdClase());
                     }
@@ -47,27 +46,23 @@ public class SubscripcionController {
     }
 
     // ----------- CREATE -----------
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/insert")
     public ResponseEntity<SubscripcionDto> add(@RequestBody SubscripcionDto dto) {
 
-        // 1) Buscar la clase por id que viene en el DTO
         Clase clase = claseService.listId(dto.getClaseid());
         if (clase == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        // 2) Armar la entidad
         Subscripcion sub = new Subscripcion();
         sub.setNombre(dto.getNombre());
         sub.setDescripcion(dto.getDescripcion());
         sub.setPrecio(dto.getPrecio());
         sub.setClase(clase);
 
-        // 3) Guardar
         Subscripcion guardada = subscripcionService.insert(sub);
 
-        // 4) Armar DTO de respuesta (igual estilo que arriba)
         SubscripcionDto respuesta = new SubscripcionDto();
         respuesta.setIdSubscripcion(guardada.getIdSubscripcion());
         respuesta.setNombre(guardada.getNombre());
@@ -80,9 +75,8 @@ public class SubscripcionController {
         return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
     }
 
-
     // ----------- READ: BUSCAR POR ID -----------
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping("/{id}")
     public ResponseEntity<?> listarPorId(@PathVariable("id") Integer id) {
         Subscripcion sub = subscripcionService.buscar(id);
@@ -104,7 +98,7 @@ public class SubscripcionController {
     }
 
     // ----------- UPDATE -----------
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@RequestBody SubscripcionDto dto) {
         Subscripcion existente = subscripcionService.buscar(dto.getIdSubscripcion());
@@ -141,7 +135,7 @@ public class SubscripcionController {
     }
 
     // ----------- DELETE -----------
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<?> eliminar(@PathVariable("id") Integer id) {
         Subscripcion sub = subscripcionService.buscar(id);

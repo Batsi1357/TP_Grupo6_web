@@ -22,6 +22,7 @@ public class OrderSubscripcionController
     private OrdenSubscripcionService ordenSubscripcionService;
 
     // ----------- READ: LISTAR TODAS -----------
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping
     public List<OrdenSubscripcionDto> listar() {
         return ordenSubscripcionService.list().stream().map(orden -> {
@@ -31,7 +32,7 @@ public class OrderSubscripcionController
     }
 
     // ----------- CREATE -----------
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/insert")
     public ResponseEntity<OrdenSubscripcionDto> add(@RequestBody OrdenSubscripcionDto dto) {
 
@@ -54,7 +55,7 @@ public class OrderSubscripcionController
     }
 
     // ----------- READ: BUSCAR POR ID -----------
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping("/{id}")
     public ResponseEntity<?> listarPorId(@PathVariable("id") Integer id) {
         OrdenSubscripcion ordenSubscripcion = ordenSubscripcionService.listId(id);
@@ -66,7 +67,7 @@ public class OrderSubscripcionController
     }
 
     // ----------- UPDATE -----------
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@RequestBody OrdenSubscripcion request) {
         OrdenSubscripcion existente = ordenSubscripcionService.listId(request.getIdOrdenSubscripcion());
@@ -79,7 +80,7 @@ public class OrderSubscripcionController
     }
 
     // ----------- DELETE -----------
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<?> eliminar(@PathVariable("id") Integer id) {
         OrdenSubscripcion ordenSubscripcion = ordenSubscripcionService.listId(id);

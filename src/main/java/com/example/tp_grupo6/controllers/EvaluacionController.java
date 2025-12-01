@@ -26,7 +26,7 @@ public class EvaluacionController {
     @Autowired
     private UnidadService unidadService;
     // ----------- READ: LISTAR TODAS -----------
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping
     public List<EvaluacionDto> listar() {
         return evaluacionService.list().stream().map(evaluacion -> {
@@ -36,7 +36,7 @@ public class EvaluacionController {
     }
 
     // ----------- CREATE -----------
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/insert")
     public ResponseEntity<EvaluacionDto> add(@RequestBody EvaluacionDto dto) {
 
@@ -60,7 +60,7 @@ public class EvaluacionController {
     }
 
     // ----------- READ: BUSCAR POR ID -----------
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping("/{id}")
     public ResponseEntity<?> listarPorId(@PathVariable("id") Integer id) {
         Evaluacion evaluacion = evaluacionService.listId(id);
@@ -72,7 +72,7 @@ public class EvaluacionController {
     }
 
     // ----------- UPDATE -----------
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update")
     public ResponseEntity<?> update(@RequestBody Evaluacion request) {
         Evaluacion existente = evaluacionService.listId(request.getIdEvaluacion());
@@ -99,14 +99,14 @@ public class EvaluacionController {
     // ---------- Endpoints para las 4 querys ----------
 
     // QM #3: duración <= X
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping("/buscar-duracion-max")
     public List<Evaluacion> buscarPorDuracionMaxima(@RequestParam int duracionMax) {
         return evaluacionService.findByDuracionMaxima(duracionMax);
     }
 
     // SQL nativo #2: FechaInicio > fecha
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping("/buscar-fecha-inicio")
     public List<Evaluacion> buscarPorFechaInicio(
             @RequestParam
@@ -115,14 +115,14 @@ public class EvaluacionController {
     }
 
     // SQL nativo #3: título contiene texto
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping("/buscar-titulo")
     public List<Evaluacion> buscarPorTitulo(@RequestParam String titulo) {
         return evaluacionService.findByTituloContieneSQL(titulo);
     }
 
     // JPQL #2: entre fechas
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping("/buscar-entre-fechas")
     public List<Evaluacion> buscarEntreFechas(
             @RequestParam("inicio")

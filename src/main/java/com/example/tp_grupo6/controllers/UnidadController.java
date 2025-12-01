@@ -16,14 +16,13 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/Unidad")
 @CrossOrigin("*")
-public class
-UnidadController
-{
+public class UnidadController {
+
     @Autowired
     private UnidadService unidadService;
 
     // ----------- READ: LISTAR TODAS -----------
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping
     public List<UnidadDto> listar() {
         return unidadService.list().stream().map(unidad -> {
@@ -33,7 +32,7 @@ UnidadController
     }
 
     // ----------- CREATE -----------
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/insert")
     public ResponseEntity<Unidad> add(@RequestBody Unidad unidad) {
         if (unidad == null) {
@@ -44,7 +43,7 @@ UnidadController
     }
 
     // ----------- READ: BUSCAR POR ID -----------
-    @PreAuthorize("hasRole('Estudiante')")
+    @PreAuthorize("hasRole('ESTUDIANTE')")
     @GetMapping("/{id}")
     public ResponseEntity<?> listarPorId(@PathVariable("id") Integer id) {
         Unidad unidad = unidadService.listId(id);
@@ -56,7 +55,7 @@ UnidadController
     }
 
     // ----------- UPDATE -----------
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@RequestBody Unidad request) {
         Unidad existente = unidadService.listId(request.getIdUnidad());
@@ -69,7 +68,7 @@ UnidadController
     }
 
     // ----------- DELETE -----------
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<?> eliminar(@PathVariable("id") Integer id) {
         Unidad unidad = unidadService.listId(id);
@@ -82,31 +81,30 @@ UnidadController
     }
 
     // QM #1: por categoría exacta
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping("/buscar-categoria")
     public List<Unidad> buscarPorCategoria(@RequestParam String categoria) {
         return unidadService.findByCategoria(categoria);
     }
 
     // QM #2: por nivel >=
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping("/buscar-nivel")
     public List<Unidad> buscarPorNivelMayorIgual(@RequestParam int nivel) {
         return unidadService.findByNivelMayorIgual(nivel);
     }
 
     // SQL nativo #1: duración mínima
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping("/buscar-duracion")
     public List<Unidad> buscarPorDuracionMinima(@RequestParam int minDuracion) {
         return unidadService.findByDuracionMinima(minDuracion);
     }
 
     // JPQL #1: título contiene texto
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping("/buscar-titulo")
     public List<Unidad> buscarPorTitulo(@RequestParam String texto) {
         return unidadService.findByTituloContiene(texto);
     }
-
 }

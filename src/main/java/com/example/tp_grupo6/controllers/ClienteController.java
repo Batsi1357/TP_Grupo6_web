@@ -27,7 +27,7 @@ public class ClienteController {
     private UsuarioService usuarioService;
 
     // ----------- READ: LISTAR TODOS -----------
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping
     public List<ClienteDto> listar() {
         return clienteService.list().stream().map(cliente -> {
@@ -37,7 +37,7 @@ public class ClienteController {
     }
 
     // ----------- CREATE -----------
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/insert")
     public ResponseEntity<?> add(@RequestBody ClienteDto dto) {
         if (dto == null) {
@@ -74,7 +74,7 @@ public class ClienteController {
         return new ResponseEntity<>(cliente, HttpStatus.CREATED);
     }
     // ----------- READ: BUSCAR POR ID -----------
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping("/{id}")
     public ResponseEntity<?> listarPorId(@PathVariable("id") Integer id) {
         Cliente cliente = clienteService.listId(id);
@@ -86,7 +86,7 @@ public class ClienteController {
     }
 
     // ----------- UPDATE -----------
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update")
     public ResponseEntity<?> update(@RequestBody Cliente request) {
         Cliente existente = clienteService.listId(request.getIdCliente());
@@ -99,7 +99,7 @@ public class ClienteController {
     }
 
     // ----------- DELETE -----------
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<?> eliminar(@PathVariable("id") Integer id) {
         Cliente cliente = clienteService.listId(id);
@@ -114,28 +114,28 @@ public class ClienteController {
     // ---------- Endpoints de las 4 querys ----------
 
     // QM #4: por apellido exacto
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping("/buscar-email")
     public List<Cliente> buscarporEmail(@RequestParam String email) {
         return clienteService.findByEmail(email);
     }
 
     // SQL nativo #4: dominio de email (ej: "@gmail.com")
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping("/buscar-dominio")
     public List<Cliente> buscarPorDominio(@RequestParam String dominio) {
         return clienteService.findByDominioEmailSQL(dominio);
     }
 
     // JPQL #3: edad >= edadMin
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping("/buscar-edad")
     public List<Cliente> buscarPorEdadMinima(@RequestParam int edadMin) {
         return clienteService.findByEdadMinimaJPQL(edadMin);
     }
 
     // JPQL #4: nombre o apellido contiene texto
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping("/buscar-nombre-apellido")
     public List<Cliente> buscarPorNombreOApellido(@RequestParam String texto) {
         return clienteService.findByNombreOApellidoContiene(texto);

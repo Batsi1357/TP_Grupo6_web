@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/auth")
 @CrossOrigin("*")
-public class AuthController
-{
+public class AuthController {
+
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -29,7 +29,6 @@ public class AuthController
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponseDto> login(@RequestBody JwtRequestDto request) {
-
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
@@ -39,10 +38,8 @@ public class AuthController
 
         SecurityContextHolder.getContext().setAuthentication(auth);
 
-        UserDetails userDetails =
-                userDetailsService.loadUserByUsername(request.getUsername());
-
-        String token = jwtTokenUtil.generateToken(userDetails.getUsername());
+        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
+        String token = jwtTokenUtil.generateToken(userDetails);
 
         JwtResponseDto response = new JwtResponseDto(token);
         return ResponseEntity.ok(response);

@@ -26,7 +26,7 @@ public class ClaseController {
     private UnidadService unidadService;
 
     // ----------- READ: LISTAR TODAS -----------
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping
     public List<ClaseDto> listar() {
         return claseService.list().stream().map(clase -> {
@@ -36,31 +36,29 @@ public class ClaseController {
     }
 
     // ----------- CREATE -----------
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/insert")
     public ResponseEntity<ClaseDto> add(@RequestBody ClaseDto dto) {
 
-        // 1) Buscar la unidad
         Unidad unidad = unidadService.listId(dto.getUnidadId());
         if (unidad == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
-        // 2) Armar la entity
         Clase clase = new Clase();
         clase.setClasePersonalizada(dto.getClasePersonalizada());
         clase.setUnidad(unidad);
 
-        // 3) Guardar (haz que insert devuelva Clase)
         Clase guardada = claseService.insert(clase);
 
-        // 4) Mapear a DTO para la respuesta
         ModelMapper m = new ModelMapper();
         ClaseDto respuesta = m.map(guardada, ClaseDto.class);
 
         return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
     }
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+
+    // ----------- READ: BUSCAR POR ID -----------
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping("/{id}")
     public ResponseEntity<?> listarPorId(@PathVariable("id") Integer id) {
         Clase clase = claseService.listId(id);
@@ -70,7 +68,9 @@ public class ClaseController {
         }
         return ResponseEntity.ok(clase);
     }
-    @PreAuthorize("hasRole('Admin')")
+
+    // ----------- UPDATE -----------
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update")
     public ResponseEntity<?> update(@RequestBody Clase request) {
 
@@ -81,7 +81,9 @@ public class ClaseController {
         claseService.update(request);
         return new ResponseEntity<>(request, HttpStatus.OK);
     }
-    @PreAuthorize("hasRole('Admin')")
+
+    // ----------- DELETE -----------
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<?> eliminar(@PathVariable("id") Integer id) {
         Clase clase = claseService.listId(id);

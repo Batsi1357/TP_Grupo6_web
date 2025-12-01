@@ -23,7 +23,7 @@ public class PreguntaController
     private PreguntaService preguntaService;
 
     // ----------- READ: LISTAR TODAS -----------
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping
     public List<PreguntaDto> listar() {
         return preguntaService.list().stream().map(pregunta -> {
@@ -33,7 +33,7 @@ public class PreguntaController
     }
 
     // ----------- CREATE -----------
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/insert")
     public ResponseEntity<PreguntaDto> add(@RequestBody PreguntaDto dto) {
 
@@ -51,7 +51,7 @@ public class PreguntaController
         return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
     }
     // ----------- READ: BUSCAR POR ID -----------
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping("/{id}")
     public ResponseEntity<?> listarPorId(@PathVariable("id") Integer id) {
         Pregunta pregunta = preguntaService.listId(id);
@@ -63,7 +63,7 @@ public class PreguntaController
     }
 
     // ----------- UPDATE -----------
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Integer id,
                                     @RequestBody PreguntaDto dto) {
@@ -92,7 +92,7 @@ public class PreguntaController
     }
 
     // ----------- DELETE -----------
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<?> eliminar(@PathVariable("id") Integer id) {
         Pregunta pregunta = preguntaService.listId(id);

@@ -27,7 +27,7 @@ public class RespuestaController {
     private PreguntaService preguntaService;
 
     // ----------- LISTAR TODOS -----------
-    //@PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping
     public List<RespuestaDto> listar() {
         return respuestaService.list().stream().map(respuesta -> {
@@ -41,7 +41,7 @@ public class RespuestaController {
     }
 
     // ----------- LISTAR POR ID -----------
-    @PreAuthorize("hasAnyRole('Admin','Estudiante')")
+    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping("/{id}")
     public ResponseEntity<?> listarPorId(@PathVariable("id") Integer id) {
         Respuesta respuesta = respuestaService.listId(id);
@@ -60,7 +60,7 @@ public class RespuestaController {
     }
 
     // ----------- INSERT -----------
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/insert")
     public ResponseEntity<?> add(@RequestBody RespuestaDto request) {
 
@@ -96,7 +96,7 @@ public class RespuestaController {
     }
 
     // ----------- UPDATE -----------
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Integer id,
                                     @RequestBody RespuestaDto request) {
@@ -133,7 +133,7 @@ public class RespuestaController {
     }
 
     // ----------- DELETE -----------
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<?> eliminar(@PathVariable("id") Integer id) {
         Respuesta respuesta = respuestaService.listId(id);
