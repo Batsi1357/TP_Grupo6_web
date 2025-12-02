@@ -12,6 +12,5 @@ public interface OrdenSubscripcionService
     public OrdenSubscripcion listId(int id);
     public void delete(int id);
     public void update(OrdenSubscripcion  ordenSubscripcion);
-    List<OrdenSubscripcion> listarPorRangoDeFechas(LocalDate FechaInicio, LocalDate FechaFin);
-    List<OrdenSubscripcion> listarPorCliente(int idCliente);
+
 }

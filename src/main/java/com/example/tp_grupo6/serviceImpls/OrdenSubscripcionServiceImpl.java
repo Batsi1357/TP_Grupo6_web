@@ -42,13 +42,4 @@ public class OrdenSubscripcionServiceImpl implements OrdenSubscripcionService
         ordenSubscripcionRepository.save(ordenSubscripcion);
     }
 
-    @Override
-    public List<OrdenSubscripcion> listarPorRangoDeFechas(LocalDate FechaInicio, LocalDate FechaFin) {
-        return List.of();
-    }
-
-    @Override
-    public List<OrdenSubscripcion> listarPorCliente(int idCliente) {
-        return List.of();
-    }
 }
