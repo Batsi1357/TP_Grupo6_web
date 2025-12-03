@@ -129,5 +129,48 @@ public class UsuarioController {
         usuarioService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    // ----------- REGISTRO PÚBLICO (sin autenticación) -----------
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody UsuarioDto request) {
+
+        if (request == null || request.getUsername() == null || request.getPassword() == null) {
+            return new ResponseEntity<>("Datos incompletos", HttpStatus.BAD_REQUEST);
+        }
+
+        // Verificar si el usuario ya existe
+        Usuario existente = usuarioService.findByUsername(request.getUsername());
+        if (existente != null) {
+            return new ResponseEntity<>("El usuario ya existe", HttpStatus.CONFLICT);
+        }
+
+        // Determinar el rol (por defecto ESTUDIANTE si no viene)
+        String rolNombre = request.getRol() != null ? request.getRol() : "ESTUDIANTE";
+
+        // Buscar el rol por nombre
+        Rol rol = rolService.findByNombre(rolNombre);
+        if (rol == null) {
+            return new ResponseEntity<>("Rol no válido: " + rolNombre, HttpStatus.BAD_REQUEST);
+        }
+
+        // Crear el nuevo usuario
+        Usuario usuario = new Usuario();
+        usuario.setUsername(request.getUsername());
+        usuario.setPassword(request.getPassword()); // Asegúrate de encriptar en el service
+        usuario.setActivo(request.getActivo() != null ? request.getActivo() : "S");
+        usuario.setRoles(List.of(rol));
+
+        // Guardar el usuario
+        usuarioService.insert(usuario);
+
+        // Preparar respuesta (sin incluir la contraseña)
+        UsuarioDto response = new UsuarioDto();
+        response.setIdUsuario(usuario.getIdUsuario());
+        response.setUsername(usuario.getUsername());
+        response.setActivo(usuario.getActivo());
+        response.setRol(rolNombre);
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
 }
 

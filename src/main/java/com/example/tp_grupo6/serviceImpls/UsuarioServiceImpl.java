@@ -4,7 +4,7 @@ import com.example.tp_grupo6.entities.Usuario;
 import com.example.tp_grupo6.repositories.UsuarioRepository;
 import com.example.tp_grupo6.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +15,9 @@ public class UsuarioServiceImpl implements UsuarioService
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public List<Usuario> list() {
         return usuarioRepository.findAll();
@@ -22,6 +25,10 @@ public class UsuarioServiceImpl implements UsuarioService
 
     @Override
     public void insert(Usuario usuario) {
+        // Encriptar la contraseña antes de guardar
+        if (usuario.getPassword() != null && !usuario.getPassword().startsWith("$2a$")) {
+            usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        }
         usuarioRepository.save(usuario);
     }
 
@@ -37,12 +44,16 @@ public class UsuarioServiceImpl implements UsuarioService
 
     @Override
     public void update(Usuario usuario) {
+        // Encriptar la contraseña si se está actualizando y no está ya encriptada
+        if (usuario.getPassword() != null && !usuario.getPassword().startsWith("$2a$")) {
+            usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        }
         usuarioRepository.save(usuario);
     }
+
     @Override
     public Usuario findByUsername(String username) {
-        return usuarioRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("No existe usuario"));
+        return usuarioRepository.findByUsername(username).orElse(null);
     }
 
 
