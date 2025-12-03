@@ -43,6 +43,7 @@ public class WebSecurityConfig
                         auth
                                 // Rutas públicas - NO requieren autenticación
                                 .requestMatchers(HttpMethod.POST, "/Usuario/register").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/Usuario/insert").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                                 .requestMatchers("/auth/**").permitAll()
                                 .requestMatchers("/swagger-ui/**", "/swagger-ui.html").permitAll()
