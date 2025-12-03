@@ -29,27 +29,36 @@ public class WebSecurityConfig
             JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint
     ) throws Exception {
 
-        http.csrf(csrf -> csrf.disable())
+        http
+                // CORS debe ir primero
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                // Deshabilitar CSRF para APIs REST
+                .csrf(csrf -> csrf.disable())
+                // Sesiones stateless (sin sesiones de servidor)
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+                // Configuración de autorización
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers(
-                                        "/auth/**",
-                                        "/swagger-ui/**",
-                                        "/swagger-ui.html",
-                                        "/v3/api-docs/**",
-                                        "/v3/api-docs.yaml"
-                                ).permitAll()
+                        auth
+                                // Rutas públicas - NO requieren autenticación
+                                .requestMatchers(HttpMethod.POST, "/Usuario/register").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                                .requestMatchers("/auth/**").permitAll()
+                                .requestMatchers("/swagger-ui/**", "/swagger-ui.html").permitAll()
+                                .requestMatchers("/v3/api-docs/**", "/v3/api-docs.yaml").permitAll()
+                                // Permitir OPTIONS para CORS preflight
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                // Todas las demás rutas requieren autenticación
                                 .anyRequest().authenticated()
                 )
+                // Manejo de excepciones de autenticación
                 .exceptionHandling(ex ->
                         ex.authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
+                // Deshabilitar login form y basic auth
                 .formLogin(form -> form.disable())
-                .httpBasic(basic -> basic.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()));  // Agregar soporte CORS aquí
+                .httpBasic(basic -> basic.disable());
 
         // Agregar filtro JWT antes del filtro de username/password
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -73,18 +82,37 @@ public class WebSecurityConfig
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
 
-        // Permitir todos los orígenes (puedes especificar uno específico como "http://localhost:4200" si es necesario)
+        // Permitir orígenes específicos
         config.addAllowedOrigin("http://localhost:4200");
+        config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedOrigin("https://tp-grupo6-web.onrender.com");
 
-        // Permitir todos los métodos HTTP
-        config.addAllowedMethod("*");
+        // Permitir cualquier subdominio de Render (por si el frontend tiene otra URL)
+        config.addAllowedOriginPattern("https://*.onrender.com");
+        config.addAllowedOriginPattern("http://localhost:*");
 
-        // Permitir todos los encabezados
+        // Métodos HTTP permitidos (especificar todos explícitamente)
+        config.addAllowedMethod("GET");
+        config.addAllowedMethod("POST");
+        config.addAllowedMethod("PUT");
+        config.addAllowedMethod("DELETE");
+        config.addAllowedMethod("OPTIONS");
+        config.addAllowedMethod("PATCH");
+
+        // Headers permitidos
         config.addAllowedHeader("*");
 
-        // Permitir credenciales (cookies, encabezados de autorización, etc.)
+        // Headers expuestos (para que el frontend pueda leerlos)
+        config.addExposedHeader("Authorization");
+        config.addExposedHeader("Content-Type");
+
+        // Permitir credenciales (importante para JWT)
         config.setAllowCredentials(true);
 
+        // Tiempo de caché para preflight requests (1 hora)
+        config.setMaxAge(3600L);
+
+        // Aplicar esta configuración a todos los endpoints
         source.registerCorsConfiguration("/**", config);
         return source;
     }
