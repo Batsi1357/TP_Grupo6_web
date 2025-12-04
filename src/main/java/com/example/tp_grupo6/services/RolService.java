@@ -12,4 +12,5 @@ public interface RolService
     public Rol listId(int id);
     public void delete(int id);
     public void update(Rol rol);
+    public Rol findByNombre(String nombre);
 }

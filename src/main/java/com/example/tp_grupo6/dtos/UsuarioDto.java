@@ -9,4 +9,5 @@ public class UsuarioDto
     private String password;
     private String activo;
     private Integer RolId;
+    private String rol; // Para enviar/recibir el nombre del rol como string
 }

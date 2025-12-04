@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+
 @Service
 public class RolServiceImpl implements RolService
 {
@@ -36,6 +36,11 @@ public class RolServiceImpl implements RolService
     @Override
     public void update(Rol rol) {
         rolRepository.save(rol);
+    }
+
+    @Override
+    public Rol findByNombre(String nombre) {
+        return rolRepository.findByTipoRol(nombre).orElse(null);
     }
 
 }
