@@ -99,14 +99,12 @@ public class EvaluacionController {
     // ---------- Endpoints para las 4 querys ----------
 
     // QM #3: duración <= X
-    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping("/buscar-duracion-max")
     public List<Evaluacion> buscarPorDuracionMaxima(@RequestParam int duracionMax) {
         return evaluacionService.findByDuracionMaxima(duracionMax);
     }
 
     // SQL nativo #2: FechaInicio > fecha
-    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping("/buscar-fecha-inicio")
     public List<Evaluacion> buscarPorFechaInicio(
             @RequestParam
@@ -115,14 +113,12 @@ public class EvaluacionController {
     }
 
     // SQL nativo #3: título contiene texto
-    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping("/buscar-titulo")
     public List<Evaluacion> buscarPorTitulo(@RequestParam String titulo) {
         return evaluacionService.findByTituloContieneSQL(titulo);
     }
 
     // JPQL #2: entre fechas
-    @PreAuthorize("hasAnyRole('ADMIN','ESTUDIANTE')")
     @GetMapping("/buscar-entre-fechas")
     public List<Evaluacion> buscarEntreFechas(
             @RequestParam("inicio")
